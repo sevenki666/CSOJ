@@ -1,3 +1,29 @@
+# CSOJ
+
+This is the project of CYSY LAN Online Judge, which is powered by UOJ.
+
+24/12/15: This project is still preparing.
+
+If you have any problems about CSOJ, please contact [sevenki](https://github.com/sevenki666/).
+
+maintainer: sevenki
+
+Todo List:
+
+- Update compilers.
+- Feature: ~~User Group~~ , and change the color of administrator's display. Note: I don't have much time so I just put the administrator list into uoj.js. I know it's stupid.
+- Use cravatar instead of gravatar.
+- Change the Mathjax cdn.
+- Feature: Refuse to register accounts by oneself.
+- Add reference and solution link in problems.
+- Add "Contest Conclusion System".
+- Feature: test data download.
+
+以下为 UOJ 社区版仓库 README.md 原文。
+
+---
+
+
 <p align="center"><img src="https://github.com/UniversalOJ/UOJ-System/blob/master/web/images/logo.png?raw=true"></p>
 
 # Universal Online Judge
