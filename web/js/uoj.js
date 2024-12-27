@@ -130,6 +130,13 @@ function getColOfScore(score) {
 	}
 }
 
+//Modify special Admins here.
+function isSuperAdmin(username) {
+	return username == "sevenki" ||
+		username == "std" ||
+		username == "e_thinker";
+}
+
 function getUserLink(username, rating, addSymbol) {
 	if (!username) {
 		return '';
@@ -140,6 +147,9 @@ function getUserLink(username, rating, addSymbol) {
 	var text = username;
 	if (username.charAt(0) == '@') {
 		username = username.substr(1);
+	}
+	if(isSuperAdmin(username)){
+		return '<a class="uoj-username" href="' + uojHome + '/user/profile/' + username + '" style="color:' + 'rgb(255, 51, 204)' + '">' + text + '</a>';
 	}
 	if (addSymbol) {
 		if (rating >= 2500) {
@@ -162,6 +172,9 @@ function getUserSpan(username, rating, addSymbol) {
 	var text = username;
 	if (username.charAt(0) == '@') {
 		username = username.substr(1);
+	}
+	if(isSuperAdmin(username)){
+		return '<span class="uoj-username" style="color:' + 'rgb(255, 51, 204)' + '">' + text + '</span>';
 	}
 	if (addSymbol) {
 		if (rating >= 2500) {
@@ -193,6 +206,10 @@ $.fn.uoj_honor = function() {
 		var honor = $(this).text();
 		var rating = $(this).data("rating");
 		if (isNaN(rating)) {
+			return;
+		}
+		if (isSuperAdmin(honor)){
+			$(this).css("color", "rgb(255, 51, 204)").html(honor);
 			return;
 		}
 		if (rating >= 2500) {

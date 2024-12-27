@@ -10,14 +10,14 @@ maintainer: sevenki
 
 Todo List:
 
-- Update compilers.
-- Feature: ~~User Group~~ , and change the color of administrator's display. Note: I don't have much time so I just put the administrator list into uoj.js. I know it's stupid.
-- Use cravatar instead of gravatar.
-- Change the Mathjax cdn.
-- Feature: Refuse to register accounts by oneself.
-- Add reference and solution link in problems.
-- Add "Contest Conclusion System".
-- Feature: test data download.
+- [ ] Update compilers.
+- [x] Feature: ~~User Group~~ , and change the color of administrator's display. Note: I don't have much time so I just put the administrator list into uoj.js. I know it's stupid.
+- [x] Use cravatar instead of gravatar.
+- [ ] Change the Mathjax cdn.
+- [ ] Feature: Refuse to register accounts by oneself.
+- [ ] Add reference and solution link in problems.
+- [ ] ~~Add "Contest Conclusion System".~~ Using Blog is enough.
+- [ ] Feature: test data download.
 
 以下为 UOJ 社区版仓库 README.md 原文。
 

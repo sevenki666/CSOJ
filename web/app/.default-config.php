@@ -1,10 +1,10 @@
 <?php
 return [
 	'profile' => [
-		'oj-name' => 'Universal Online Judge',
-		'oj-name-short' => 'UOJ',
+		'oj-name' => 'CYSY Online Judge',
+		'oj-name-short' => 'CSOJ',
 		'administrator' => 'root',
-		'admin-email' => 'admin@local_uoj.ac',
+		'admin-email' => 'the1992444592+163.com',
 		'QQ-group' => '',
 		'ICP-license' => ''
 	],
