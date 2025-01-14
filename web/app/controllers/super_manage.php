@@ -47,10 +47,10 @@
 	$reg_form = new UOJForm('reg_user');
 	$reg_form->addInput('user_name', 'text', '注册用户名', '',
 		function ($user_name) {
-			if (!validateUsername($username)) {
+			if (!validateUsername($user_name)) {
 				return '用户名不合法';
 			}
-			if (queryUser($username)) {
+			if (queryUser($user_name)) {
 				return '用户名已被占用';
 			}
 			return '';
@@ -93,10 +93,10 @@
 	$reset_pwd_form = new UOJForm('reset_pwd_form');
 	$reset_pwd_form->addInput('user_name', 'text', '用户名', '',
 		function ($user_name) {
-			if (!validateUsername($username)) {
+			if (!validateUsername($user_name)) {
 				return '用户名不合法';
 			}
-			if (!queryUser($username)) {
+			if (!queryUser($user_name)) {
 				return '用户不存在';
 			}
 			return '';
