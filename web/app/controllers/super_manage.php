@@ -85,7 +85,7 @@
 		$svn_pw = uojRandString(10);
 		DB::query("insert into user_info (username, email, password, svn_password, register_time) values ('$user_name', '$esc_email', '$pwd', '$svn_pw', now())");
 
-	}
+	};
 	$reg_form->runAtServer();
 	// Register Ends
 
@@ -118,7 +118,7 @@
 		$pwd = $_POST['user_pwd'];
 		$pwd = getPasswordToStore($pwd, $user_name);
 		DB::update("update user_info set password = '$pwd' where username = '{$user_name}'");
-	}
+	};
 	$reset_pwd_form->runAtServer();
 	// Reset pwd Ends
 
