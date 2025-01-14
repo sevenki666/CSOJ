@@ -1,7 +1,6 @@
 FROM ubuntu:20.04
-MAINTAINER Baoshuo <i@baoshuo.ren>
-LABEL org.opencontainers.image.source=https://github.com/UniversalOJ/UOJ-System
-LABEL org.opencontainers.image.description="UOJ Web"
+LABEL org.opencontainers.image.source=https://github.com/sevenki666/CSOJ
+LABEL org.opencontainers.image.description="CSOJ Web"
 LABEL org.opencontainers.image.licenses=MIT
 
 ARG CLONE_ADDFLAG

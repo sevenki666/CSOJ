@@ -43,6 +43,85 @@
 	};
 	$user_form->runAtServer();
 	
+	// Register Begins
+	$reg_form = new UOJForm('reg_user');
+	$reg_form->addInput('user_name', 'text', '注册用户名', '',
+		function ($user_name) {
+			if (!validateUsername($username)) {
+				return '用户名不合法';
+			}
+			if (queryUser($username)) {
+				return '用户名已被占用';
+			}
+			return '';
+		},
+		null
+	);
+	$reg_form->addInput('user_email', 'email', '邮箱', '',
+		function ($user_email) {
+			if (!validateEmail($user_email)){
+				return '邮箱不合法';
+			}
+			return '';
+		},
+		null
+	);
+	$reg_form->addInput('user_pwd', 'text', '密码', '',
+		function ($password) {
+			if (!validatePassword($password)) {
+				return '无效密码。';
+			}
+			return '';
+		},
+		null
+	);
+	$reg_form->handle = function() {
+		global $reg_form;
+		$user_name = $_POST['user_name'];
+		$email = $_POST['user_email'];
+		$pwd = $_POST['user_pwd'];
+		$pwd = getPasswordToStore($pwd, $user_name);
+		$esc_email = DB::escape($email);
+		$svn_pw = uojRandString(10);
+		DB::query("insert into user_info (username, email, password, svn_password, register_time) values ('$user_name', '$esc_email', '$pwd', '$svn_pw', now())");
+
+	}
+	$reg_form->runAtServer();
+	// Register Ends
+
+	// Reset pwd Begins
+	$reset_pwd_form = new UOJForm('reset_pwd_form');
+	$reset_pwd_form->addInput('user_name', 'text', '用户名', '',
+		function ($user_name) {
+			if (!validateUsername($username)) {
+				return '用户名不合法';
+			}
+			if (!queryUser($username)) {
+				return '用户不存在';
+			}
+			return '';
+		},
+		null
+	);
+	$reset_pwd_form->addInput('user_pwd', 'text', '密码', '',
+		function ($password) {
+			if (!validatePassword($password)) {
+				return '无效密码。';
+			}
+			return '';
+		},
+		null
+	);
+	$reset_pwd_form->handle = function() {
+		global $reset_pwd_form;
+		$user_name = $_POST['user_name'];
+		$pwd = $_POST['user_pwd'];
+		$pwd = getPasswordToStore($pwd, $user_name);
+		DB::update("update user_info set password = '$pwd' where username = '{$user_name}'");
+	}
+	$reset_pwd_form->runAtServer();
+	// Reset pwd Ends
+
 	$blog_link_contests = new UOJForm('blog_link_contests');
 	$blog_link_contests->addInput('blog_id', 'text', '博客ID', '',
 		function ($x) {
@@ -368,6 +447,8 @@ EOD;
 	<div class="col-sm-9">
 		<?php if ($cur_tab === 'users'): ?>
 			<?php $user_form->printHTML(); ?>
+			<?php $reg_form->printHTML(); ?>
+			<?php $reset_pwd_form->printHTML(); ?>
 			<h3>封禁名单</h3>
 			<?php echoLongTable($banlist_cols, 'user_info', "usergroup='B'", '', $banlist_header_row, $banlist_print_row, $banlist_config) ?>
 		<?php elseif ($cur_tab === 'blogs'): ?>

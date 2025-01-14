@@ -3,7 +3,7 @@ return [
 	'profile' => [
 		'oj-name' => 'CYSY Online Judge',
 		'oj-name-short' => 'CSOJ',
-		'administrator' => 'root',
+		'administrator' => 'sevenki',
 		'admin-email' => 'the1992444592+163.com',
 		'QQ-group' => '',
 		'ICP-license' => ''

@@ -11,7 +11,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_BASENAME: UniversalOJ/uoj
+  IMAGE_BASENAME: sevenki666/csoj
 
 jobs:
   build:

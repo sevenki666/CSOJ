@@ -43,6 +43,10 @@
 		return "欢迎你！" . $username . "，你已成功注册。";
 	}
 	
+	if (DB::selectCount("SELECT COUNT(*) FROM user_info")) {
+		become403Page();
+	}
+
 	if (isset($_POST['register'])) {
 		echo handleRegisterPost();
 		die();

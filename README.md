@@ -13,11 +13,11 @@ Todo List:
 - [ ] Update compilers.
 - [x] Feature: ~~User Group~~ , and change the color of administrator's display. Note: I don't have much time so I just put the administrator list into uoj.js. I know it's stupid.
 - [x] Use cravatar instead of gravatar.
-- [ ] Change the Mathjax cdn.
-- [ ] Feature: Refuse to register accounts by oneself.
-- [ ] Add reference and solution link in problems.
-- [ ] ~~Add "Contest Conclusion System".~~ Using Blog is enough.
-- [ ] Feature: test data download.
+- [x] Local Mathjax.
+- [x] Feature: Refuse to register accounts by oneself.
+- [ ] ~~Add reference and solution link in problems.~~ Use HTML in statement to implement this function.
+- [ ] ~~Add "Contest Conclusion System".~~ Use Blog is enough.
+- [ ] ~~Register contest while contest is running.~~
 
 以下为 UOJ 社区版仓库 README.md 原文。
 

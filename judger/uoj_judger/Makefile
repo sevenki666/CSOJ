@@ -20,7 +20,8 @@ EXE_CHECKER = \
 	builtin/checker/rncmp \
 	builtin/checker/uncmp \
 	builtin/checker/wcmp \
-	builtin/checker/yesno
+	builtin/checker/yesno \
+	builtin/checker/oicmp
 
 EXE = main_judger \
 	run/formatter \

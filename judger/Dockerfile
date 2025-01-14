@@ -1,7 +1,6 @@
 FROM ubuntu:20.04
-MAINTAINER Baoshuo <i@baoshuo.ren>
-LABEL org.opencontainers.image.source=https://github.com/UniversalOJ/UOJ-System
-LABEL org.opencontainers.image.description="UOJ Judger"
+LABEL org.opencontainers.image.source=https://github.com/sevenki666/CSOJ
+LABEL org.opencontainers.image.description="CSOJ Judger"
 LABEL org.opencontainers.image.licenses=MIT
 
 SHELL ["/bin/bash", "-c"]
