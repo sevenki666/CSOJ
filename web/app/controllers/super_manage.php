@@ -59,7 +59,7 @@
 	);
 	$reg_form->addInput('user_email', 'email', '邮箱', '',
 		function ($user_email) {
-			if (!validateEmail($user_email)){
+			if (!validateEmail($user_email)) {
 				return '邮箱不合法';
 			}
 			return '';
