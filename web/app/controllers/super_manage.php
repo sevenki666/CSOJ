@@ -45,7 +45,7 @@
 	
 	// Register Begins
 	$reg_form = new UOJForm('reg_user');
-	$reg_form->addInput('user_name', 'text', '注册用户名', '',
+	$reg_form->addInput('reg_user_name', 'text', '注册用户名', '',
 		function ($user_name) {
 			if (!validateUsername($user_name)) {
 				return '用户名不合法';
@@ -57,7 +57,7 @@
 		},
 		null
 	);
-	$reg_form->addInput('user_email', 'email', '邮箱', '',
+	$reg_form->addInput('reg_user_email', 'email', '邮箱', '',
 		function ($user_email) {
 			if (!validateEmail($user_email)) {
 				return '邮箱不合法';
@@ -66,10 +66,16 @@
 		},
 		null
 	);
-	$reg_form->addInput('user_pwd', 'text', '密码', '',
+	$reg_form->addInput('reg_user_pwd', 'text', '密码', '',
 		function ($password) {
-			if (!validatePassword($password)) {
+			if(!is_string($password)) {
 				return '无效密码。';
+			}
+			if (strlen($password) < 6) {
+				return '长度应不小于6';
+			}
+			if(!preg_match('/^[!-~]+$/', $password)){
+				return '密码应只包含 ASCII 可见字符';
 			}
 			return '';
 		},
@@ -77,9 +83,10 @@
 	);
 	$reg_form->handle = function() {
 		global $reg_form;
-		$user_name = $_POST['user_name'];
-		$email = $_POST['user_email'];
-		$pwd = $_POST['user_pwd'];
+		$user_name = $_POST['reg_user_name'];
+		$email = $_POST['reg_user_email'];
+		$pwd = $_POST['reg_user_pwd'];
+		$pwd = hash_hmac('md5', $pwd, getPasswordClientSalt());
 		$pwd = getPasswordToStore($pwd, $user_name);
 		$esc_email = DB::escape($email);
 		$svn_pw = uojRandString(10);
@@ -91,7 +98,7 @@
 
 	// Reset pwd Begins
 	$reset_pwd_form = new UOJForm('reset_pwd_form');
-	$reset_pwd_form->addInput('user_name', 'text', '用户名', '',
+	$reset_pwd_form->addInput('res_user_name', 'text', '用户名', '',
 		function ($user_name) {
 			if (!validateUsername($user_name)) {
 				return '用户名不合法';
@@ -103,10 +110,16 @@
 		},
 		null
 	);
-	$reset_pwd_form->addInput('user_pwd', 'text', '密码', '',
+	$reset_pwd_form->addInput('res_user_pwd', 'text', '重置后密码', '',
 		function ($password) {
-			if (!validatePassword($password)) {
+			if(!is_string($password)) {
 				return '无效密码。';
+			}
+			if (strlen($password) < 6) {
+				return '长度应不小于6';
+			}
+			if(!preg_match('/^[!-~]+$/', $password)){
+				return '密码应只包含 ASCII 可见字符';
 			}
 			return '';
 		},
@@ -114,8 +127,9 @@
 	);
 	$reset_pwd_form->handle = function() {
 		global $reset_pwd_form;
-		$user_name = $_POST['user_name'];
-		$pwd = $_POST['user_pwd'];
+		$user_name = $_POST['res_user_name'];
+		$pwd = $_POST['res_user_pwd'];
+		$pwd = hash_hmac('md5', $pwd, getPasswordClientSalt());
 		$pwd = getPasswordToStore($pwd, $user_name);
 		DB::update("update user_info set password = '$pwd' where username = '{$user_name}'");
 	};
