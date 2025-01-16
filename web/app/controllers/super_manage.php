@@ -68,13 +68,13 @@
 	);
 	$reg_form->addInput('reg_user_pwd', 'text', '密码', '',
 		function ($password) {
-			if(!is_string($password)) {
+			if (!is_string($password)) {
 				return '无效密码。';
 			}
 			if (strlen($password) < 6) {
 				return '长度应不小于6';
 			}
-			if(!preg_match('/^[!-~]+$/', $password)){
+			if (!preg_match('/^[!-~]+$/', $password)) {
 				return '密码应只包含 ASCII 可见字符';
 			}
 			return '';
@@ -91,7 +91,6 @@
 		$esc_email = DB::escape($email);
 		$svn_pw = uojRandString(10);
 		DB::query("insert into user_info (username, email, password, svn_password, register_time) values ('$user_name', '$esc_email', '$pwd', '$svn_pw', now())");
-
 	};
 	$reg_form->runAtServer();
 	// Register Ends
@@ -112,13 +111,13 @@
 	);
 	$reset_pwd_form->addInput('res_user_pwd', 'text', '重置后密码', '',
 		function ($password) {
-			if(!is_string($password)) {
+			if (!is_string($password)) {
 				return '无效密码。';
 			}
 			if (strlen($password) < 6) {
 				return '长度应不小于6';
 			}
-			if(!preg_match('/^[!-~]+$/', $password)){
+			if (!preg_match('/^[!-~]+$/', $password)) {
 				return '密码应只包含 ASCII 可见字符';
 			}
 			return '';
