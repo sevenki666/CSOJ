@@ -2,15 +2,20 @@
 
 This is the project of CYSY LAN Online Judge, which is powered by UOJ.
 
-24/12/15: This project is still preparing.
+maintainer: sevenki
 
 If you have any problems about CSOJ, please contact [sevenki](https://github.com/sevenki666/).
 
-maintainer: sevenki
+24/12/15: This project is still preparing.
+25/01/17: Some basic functions are done. We will update as needed.
+
+Tips:
+
+- if you cannot connect ghcr.io during docker composing, you can modify the `docker-compose.yml` and change `ghcr.io` into `ghcr.mirrorify.net`.
 
 Todo List:
 
-- [ ] Update compilers.
+- [x] Update compilers.
 - [x] Feature: ~~User Group~~ , and change the color of administrator's display. Note: I don't have much time so I just put the administrator list into uoj.js. I know it's stupid.
 - [x] Use cravatar instead of gravatar.
 - [x] Local Mathjax.
