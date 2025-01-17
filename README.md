@@ -23,6 +23,7 @@ Todo List:
 - [ ] ~~Add reference and solution link in problems.~~ Use HTML in statement to implement this function.
 - [ ] ~~Add "Contest Conclusion System".~~ Use Blog is enough.
 - [ ] ~~Register contest while contest is running.~~
+- [x] Realname system.
 
 以下为 UOJ 社区版仓库 README.md 原文。
 

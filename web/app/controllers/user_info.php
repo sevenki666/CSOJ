@@ -9,6 +9,7 @@
 		$esc_email = HTML::escape($user['email']);
 		$esc_qq = HTML::escape($user['qq'] != 0 ? $user['qq'] : 'Unfilled');
 		$esc_sex = HTML::escape($user['sex']);
+		$esc_realname = HTML::escape($user['real_name']);
 		$col_sex="color:blue";
 		if ($esc_sex == "M") {
 			$esc_sex="♂";
@@ -39,6 +40,10 @@
 						<div class="list-group-item">
 							<h4 class="list-group-item-heading"><?= UOJLocale::get('email') ?></h4>
 							<p class="list-group-item-text"><?= $esc_email ?></p>
+						</div>
+						<div class="list-group-item">
+							<h4 class="list-group-item-heading">Real Name</h4>
+							<p class="list-group-item-text"><?= $esc_realname ?></p>
 						</div>
 						<div class="list-group-item">
 							<h4 class="list-group-item-heading"><?= UOJLocale::get('QQ') ?></h4>

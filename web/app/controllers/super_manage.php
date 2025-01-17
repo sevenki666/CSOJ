@@ -135,6 +135,44 @@
 	$reset_pwd_form->runAtServer();
 	// Reset pwd Ends
 
+	// Real Name Begins
+	$real_name_form = new UOJForm('real_name_form');
+	$real_name_form->addInput('realname_user_name', 'text', '用户名', '',
+		function ($user_name) {
+			if (!validateUsername($user_name)) {
+				return '用户名不合法';
+			}
+			if (!queryUser($user_name)) {
+				return '用户不存在';
+			}
+			return '';
+		},
+		null
+	);
+	$real_name_form->addInput('realname_user_rname', 'text', '真实姓名', '',
+		function ($real_name) {
+			if (!is_string($real_name)) {
+				return '姓名不合法';
+			}
+			if (strlen($real_name) > 8) {
+				return '姓名太长了';
+			}
+			if (strlen($real_name) < 1) {
+				return '姓名太短了';
+			}
+			return '';
+		},
+		null
+	);
+	$real_name_form->handle = function() {
+		global $real_name_form;
+		$user_name = $_POST['realname_user_name'];
+		$real_name = $_POST['realname_user_rname'];
+		$real_name = DB::escape($real_name);
+		DB::update("update user_info set real_name = '$real_name' where username = '{$user_name}'");
+	};
+	// Real Name Ends
+	
 	$blog_link_contests = new UOJForm('blog_link_contests');
 	$blog_link_contests->addInput('blog_id', 'text', '博客ID', '',
 		function ($x) {

@@ -631,6 +631,7 @@ CREATE TABLE `user_info` (
   `http_x_forwarded_for` varchar(50) NOT NULL,
   `remember_token` char(60) NOT NULL,
   `motto` varchar(200) NOT NULL,
+  `real_name` varchar(10) NOT NULL DEFAULT 'Alice',
   PRIMARY KEY (`username`),
   KEY `rating` (`rating`,`username`),
   KEY `ac_num` (`ac_num`,`username`)
