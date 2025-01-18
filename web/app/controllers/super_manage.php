@@ -154,10 +154,11 @@
 			if (!is_string($real_name)) {
 				return '姓名不合法';
 			}
-			if (strlen($real_name) > 8) {
+			$name_len = mb_strlen($real_name, "UTF-8");
+			if ($name_len > 9) {
 				return '姓名太长了';
 			}
-			if (strlen($real_name) < 1) {
+			if ($name_len < 1) {
 				return '姓名太短了';
 			}
 			return '';
