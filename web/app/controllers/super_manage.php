@@ -171,6 +171,7 @@
 		$real_name = DB::escape($real_name);
 		DB::update("update user_info set real_name = '$real_name' where username = '{$user_name}'");
 	};
+	$real_name_form->runAtServer();
 	// Real Name Ends
 	
 	$blog_link_contests = new UOJForm('blog_link_contests');
@@ -497,9 +498,22 @@ EOD;
 	
 	<div class="col-sm-9">
 		<?php if ($cur_tab === 'users'): ?>
-			<?php $user_form->printHTML(); ?>
-			<?php $reg_form->printHTML(); ?>
-			<?php $reset_pwd_form->printHTML(); ?>
+			<div>
+				<h4>用户权限</h4>
+				<?php $user_form->printHTML(); ?>
+			</div>
+			<div>
+				<h4>注册用户</h4>
+				<?php $reg_form->printHTML(); ?>
+			</div>
+			<div>
+				<h4>重置密码</h4>
+				<?php $reset_pwd_form->printHTML(); ?>
+			</div>
+			<div>
+				<h4>修改真实姓名</h4>
+				<?php $real_name_form->printHTML(); ?>
+			</div>
 			<h3>封禁名单</h3>
 			<?php echoLongTable($banlist_cols, 'user_info', "usergroup='B'", '', $banlist_header_row, $banlist_print_row, $banlist_config) ?>
 		<?php elseif ($cur_tab === 'blogs'): ?>
