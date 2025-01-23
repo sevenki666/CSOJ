@@ -1,4 +1,9 @@
 <?php
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
+?>
+<?php
 	$blogs_pag = new Paginator(array(
 		'col_names' => array('*'),
 		'table_name' => 'blogs',

@@ -2,6 +2,9 @@
 	$username = $_GET['username'];
 	
 	requireLib('flot');
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 ?>
 <?php if (validateUsername($username) && ($user = queryUser($username))): ?>
 	<?php echoUOJPageHeader($user['username'] . ' - ' . UOJLocale::get('user profile')) ?>

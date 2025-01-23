@@ -4,6 +4,9 @@
 	if (!validateUInt($_GET['id']) || !($contest = queryContest($_GET['id']))) {
 		become404Page();
 	}
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	genMoreContestInfo($contest);
 	
 	$has_contest_permission = hasContestPermission($myUser, $contest);

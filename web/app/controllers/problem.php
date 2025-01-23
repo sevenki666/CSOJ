@@ -6,6 +6,9 @@
 		become404Page();
 	}
 	
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	$problem_content = queryProblemContent($problem['id']);
 	
 	$contest = validateUInt($_GET['contest_id']) ? queryContest($_GET['contest_id']) : null;

@@ -1,4 +1,7 @@
 <?php
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	$conds = array();
 
 	$q_problem_id = isset($_GET['problem_id']) && validateUInt($_GET['problem_id']) ? $_GET['problem_id'] : null;

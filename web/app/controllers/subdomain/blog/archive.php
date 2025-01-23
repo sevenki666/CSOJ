@@ -1,6 +1,8 @@
 <?php
 	requirePHPLib('form');
-	
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	$blogs_cond = "poster = '".UOJContext::userid()."' and is_draft = false";
 	if (!UOJContext::hasBlogPermission()) {
 		$blogs_cond .= " and is_hidden = false";

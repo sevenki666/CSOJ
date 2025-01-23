@@ -3,6 +3,10 @@
 		become404Page();
 	}
 	
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
+
 	$contest = validateUInt($_GET['contest_id']) ? queryContest($_GET['contest_id']) : null;
 	if ($contest != null) {
 		genMoreContestInfo($contest);

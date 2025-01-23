@@ -3,6 +3,10 @@
 	requirePHPLib('judger');
 	requirePHPLib('data');
 	
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
+
 	if (isSuperUser($myUser)) {
 		$new_problem_form = new UOJForm('new_problem');
 		$new_problem_form->handle = function() {

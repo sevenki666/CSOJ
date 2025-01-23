@@ -4,6 +4,9 @@
 	if (!validateUInt($_GET['id']) || !($contest = queryContest($_GET['id']))) {
 		become404Page();
 	}
+	if (!Auth::check()) {
+		become404Page();
+	}
 	genMoreContestInfo($contest);
 
 	if (!hasContestPermission(Auth::user(), $contest)) {

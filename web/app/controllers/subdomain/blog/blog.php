@@ -7,7 +7,9 @@
 	if ($blog['is_hidden'] && !UOJContext::hasBlogPermission()) {
 		become403Page();
 	}
-	
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	$comment_form = new UOJForm('comment');
 	$comment_form->addVTextArea('comment', '内容', '',
 		function($comment) {

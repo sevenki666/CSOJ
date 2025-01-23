@@ -5,6 +5,9 @@
 	if (!validateUInt($_GET['id']) || !($submission = querySubmission($_GET['id']))) {
 		become404Page();
 	}
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	$submission_result = json_decode($submission['result'], true);
 	
 	$problem = queryProblemBrief($submission['problem_id']);

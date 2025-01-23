@@ -1,4 +1,9 @@
 <?php
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
+?>
+<?php
 	requirePHPLib('form');
 	
 	function echoBlogCell($blog) {

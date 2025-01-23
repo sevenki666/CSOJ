@@ -4,6 +4,9 @@
 	if (!validateUInt($_GET['id']) || !($hack = queryHack($_GET['id']))) {
 		become404Page();
 	}
+	if (!Auth::check()) {
+		redirectToLogin();
+	}
 	$submission = querySubmission($hack['submission_id']);	
 	$problem = queryProblemBrief($submission['problem_id']);
 	$problem_extra_config = getProblemExtraConfig($problem);
