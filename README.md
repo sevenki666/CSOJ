@@ -24,6 +24,7 @@ Todo List:
 - [ ] ~~Add "Contest Conclusion System".~~ Use Blog is enough.
 - [ ] ~~Register contest while contest is running.~~
 - [x] Realname system.
+- [x] Attachment download.
 
 以下为 UOJ 社区版仓库 README.md 原文。
 
