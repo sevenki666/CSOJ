@@ -30,6 +30,49 @@
 			$file_name = "/opt/uoj/judger/uoj_judger/include/testlib.h";
 			$download_name = "testlib.h";
 			break;
+		case 'statement':
+			if (!validateUInt($_GET['id']) || !($problem = queryProblemBrief($_GET['id']))) {
+				become404Page();
+			}
+			
+			$visible = isProblemVisibleToUser($problem, $myUser);
+			if (!$visible && $myUser != null) {
+				$result = DB::query("select contest_id from contests_problems where problem_id = {$_GET['id']}");
+				while (list($contest_id) = DB::fetch($result, MYSQLI_NUM)) {
+					$contest = queryContest($contest_id);
+					genMoreContestInfo($contest);
+					if ($contest['cur_progress'] != CONTEST_NOT_STARTED && hasRegistered($myUser, $contest) && queryContestProblemRank($contest, $problem)) {
+						$visible = true;
+					}
+				}
+			}
+			if (!$visible) {
+				become404Page();
+			}
+
+			$id = $_GET['id'];
+			
+			$file_name = "/opt/uoj/web/files/statement/$id.pdf";
+			$download_name = "statement$id.pdf";
+			break;
+		case 'image':
+			Auth::check() || become404Page();
+			$id = $_GET['id'];
+			$file_name = "/opt/uoj/web/files/image/$id";
+			$download_name = "$id";
+			break;
+		case 'video':
+			Auth::check() || become404Page();
+			$id = $_GET['id'];
+			$file_name = "/opt/uoj/web/files/video/$id";
+			$download_name = "$id";
+			break;
+		case 'etc':
+			Auth::check() || become404Page();
+			$id = $_GET['id'];
+			$file_name = "/opt/uoj/web/files/etc/$id";
+			$download_name = "$id";
+			break;
 		default:
 			become404Page();
 	}
@@ -43,5 +86,9 @@
 	
 	header("X-Sendfile: $file_name");
 	header("Content-type: $mimetype");
-	header("Content-Disposition: attachment; filename=$download_name");
+	if ($_GET['type'] == 'statement' || $_GET['type'] == 'video') {
+		header("Content-Disposition: inline; filename=$download_name");
+	} else {
+		header("Content-Disposition: attachment; filename=$download_name");
+	}
 ?>

@@ -259,6 +259,9 @@ $('#contest-countdown').countdown(<?= $contest['end_time']->getTimestamp() - UOJ
 <div class="tab-content">
 	<div class="tab-pane active" id="tab-statement">
 		<article class="top-buffer-md"><?= $problem_content['statement'] ?></article>
+		<?php if (in_array('PDF',queryProblemTags($problem['id']))): ?>
+		<iframe src=/download.php?type=statement&id=<?= $problem['id'] ?> width="100%" height="700px" id="statements-pdf"></iframe>
+		<?php endif ?>
 	</div>
 	<div class="tab-pane" id="tab-submit-answer">
 		<div class="top-buffer-sm"></div>
