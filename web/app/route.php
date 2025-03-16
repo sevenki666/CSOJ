@@ -70,6 +70,8 @@ Route::group([
 		Route::any('/pastes/{rand_str_id}', '/paste_view.php');
 
 		Route::any('/map_visualizer', '/map_visualizer.php');
+
+		Route::any('/filemanage', '/filemanager/tinyfilemanager.php');
 	}
 );
 
