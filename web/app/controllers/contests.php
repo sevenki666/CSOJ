@@ -27,6 +27,9 @@ EOD;
 				$contest_name_link .= '<sup><a style="color:red" href="/contest/'.$contest['id'].'/register">'.UOJLocale::get('contests::register').'</a></sup>';
 			}
 		} elseif ($contest['cur_progress'] == CONTEST_IN_PROGRESS) {
+			if ($myUser != null && !hasRegistered($myUser, $contest)) {
+				$contest_name_link .= '<sup><a style="color:red" href="/contest/'.$contest['id'].'/register">'.UOJLocale::get('contests::register').'</a></sup>';
+			}
 			$contest_name_link .= '<sup><a style="color:blue" href="/contest/'.$contest['id'].'">'.UOJLocale::get('contests::in progress').'</a></sup>';
 		} elseif ($contest['cur_progress'] == CONTEST_PENDING_FINAL_TEST) {
 			$contest_name_link .= '<sup><a style="color:blue" href="/contest/'.$contest['id'].'">'.UOJLocale::get('contests::pending final test').'</a></sup>';
