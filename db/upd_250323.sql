@@ -1,3 +1,4 @@
+USE `app_uoj233`;
 ALTER TABLE `contests` ADD COLUMN `run_mode` int(11) NOT NULL DEFAULT 0;
 ALTER TABLE `contests` ADD COLUMN `time_window_mode_last_min` int(11) NOT NULL DEFAULT 0;
 ALTER TABLE `contests_registrants` ADD COLUMN `time_window` datetime DEFAULT NULL;
