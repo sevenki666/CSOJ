@@ -4,6 +4,13 @@
 		become404Page();
 	}
 	genMoreContestInfo($contest);
+	if ($contest['run_mode'] == 1) {
+	    $time_options = array();
+	    $result = DB::query("select start_time from contest_time_window where contest_id = {$contest['id']} order by start_time");
+	    while ($row = DB::fetch($result)) {
+	        $time_options[$row['start_time']] = $row['start_time'];
+	    }
+	}
 	
 	if ($myUser == null) {
 		redirectToLogin();
@@ -12,9 +19,18 @@
 	}
 	
 	$register_form = new UOJForm('register');
+	if ($contest['run_mode'] == 1) {
+	    $default_time = count($time_options) > 0 ? current($time_options) : '';
+	    $register_form->addSelect('time_window', $time_options, '请选择比赛时间窗口', $default_time);
+	}
 	$register_form->handle = function() {
 		global $myUser, $contest;
-		DB::query("insert into contests_registrants (username, user_rating, contest_id, has_participated) values ('{$myUser['username']}', {$myUser['rating']}, {$contest['id']}, 0)");
+		if ($contest['run_mode'] == 1) {
+		    $selected_time = DB::escape($_POST['time_window']);
+		    DB::query("insert into contests_registrants (username, user_rating, contest_id, has_participated, time_window) values ('{$myUser['username']}', {$myUser['rating']}, {$contest['id']}, 0, '$selected_time')");
+		} else {
+		    DB::query("insert into contests_registrants (username, user_rating, contest_id, has_participated) values ('{$myUser['username']}', {$myUser['rating']}, {$contest['id']}, 0)");
+		}
 		updateContestPlayerNum($contest);
 	};
 	$register_form->submit_button_config['class_str'] = 'btn btn-primary';

@@ -193,13 +193,25 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 		$score[$person[0]] = array();
 	}
 	foreach ($contest_data['data'] as $submission) {
-		$penalty = (new DateTime($submission[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
-		if ($contest['extra_config']['standings_version'] >= 2) {
-			if ($submission[4] == 0) {
-				$penalty = 0;
-			}
-		}
-		$score[$submission[2]][$submission[3]] = array($submission[4], $penalty, $submission[0]);
+	    if ($contest['run_mode'] == 1) {
+	        // 使用选手选择的时间窗口作为基准
+	        $reg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '" . DB::escape($submission[2]) . "'");
+	        if ($reg && !empty($reg['time_window'])) {
+	            $baseTime = new DateTime($reg['time_window']);
+	        } else {
+	            $baseTime = $contest['start_time'];
+	        }
+	        $penalty = (new DateTime($submission[1]))->getTimestamp() - $baseTime->getTimestamp();
+	    } else {
+	        $penalty = (new DateTime($submission[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
+	    }
+	    
+	    if ($contest['extra_config']['standings_version'] >= 2) {
+	        if ($submission[4] == 0) {
+	            $penalty = 0;
+	        }
+	    }
+	    $score[$submission[2]][$submission[3]] = array($submission[4], $penalty, $submission[0]);
 	}
 
 	// standings: rank => score, penalty, [username, user_rating], virtual_rank
@@ -214,6 +226,84 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 				if ($update_contests_submissions) {
 					DB::insert("insert into contests_submissions (contest_id, submitter, problem_id, submission_id, score, penalty) values ({$contest['id']}, '{$person[0]}', {$contest_data['problems'][$i]}, {$cur_row[2]}, {$cur_row[0]}, {$cur_row[1]})");
 				}
+			}
+		}
+		$standings[] = $cur;
+	}
+
+	usort($standings, function($lhs, $rhs) {
+		if ($lhs[0] != $rhs[0]) {
+			return $rhs[0] - $lhs[0];
+		} elseif ($lhs[1] != $rhs[1]) {
+			return $lhs[1] - $rhs[1];
+		} else {
+			return strcmp($lhs[2][0], $rhs[2][0]);
+		}
+	});
+
+	$is_same_rank = function($lhs, $rhs) {
+		return $lhs[0] == $rhs[0] && $lhs[1] == $rhs[1];
+	};
+
+	for ($i = 0; $i < $n_people; $i++) {
+		if ($i == 0 || !$is_same_rank($standings[$i - 1], $standings[$i])) {
+			$standings[$i][] = $i + 1;
+		} else {
+			$standings[$i][] = $standings[$i - 1][3];
+		}
+	}
+}
+
+function calcStandingsForTimeWindowUser($contest, $contest_data, &$score, &$standings, $reqUser) {
+	// score: username, problem_pos => score, penalty, id
+	$score = array();
+	$n_people = count($contest_data['people']);
+	$n_problems = count($contest_data['problems']);
+	foreach ($contest_data['people'] as $person) {
+		$score[$person[0]] = array();
+	}
+	// Do something to calc the req_User's time from start time
+	$reqUserTimeDiff = 0;
+	$reqUserReg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '" . DB::escape($reqUser) . "'");
+	if ($reqUserReg && !empty($reqUserReg['time_window'])) {
+	    $reqUserStartTime = new DateTime($reqUserReg['time_window']);
+	    $now = new DateTime(UOJTime::$time_now_str);
+	    $reqUserTimeDiff = $now->getTimestamp() - $reqUserStartTime->getTimestamp();
+	}
+	
+	foreach ($contest_data['data'] as $submission) {
+	    if ($contest['run_mode'] == 1) {
+	        // 使用选手选择的时间窗口作为基准
+	        $reg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '" . DB::escape($submission[2]) . "'");
+	        if ($reg && !empty($reg['time_window'])) {
+	            $baseTime = new DateTime($reg['time_window']);
+	        } else {
+	            $baseTime = $contest['start_time'];
+	        }
+	        $penalty = (new DateTime($submission[1]))->getTimestamp() - $baseTime->getTimestamp();
+	    } else {
+	        $penalty = (new DateTime($submission[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
+	    }
+	    if ($penalty > $reqUserTimeDiff) {
+	        continue;
+	    }
+	    if ($contest['extra_config']['standings_version'] >= 2) {
+	        if ($submission[4] == 0) {
+	            $penalty = 0;
+	        }
+	    }
+	    $score[$submission[2]][$submission[3]] = array($submission[4], $penalty, $submission[0]);
+	}
+
+	// standings: rank => score, penalty, [username, user_rating], virtual_rank
+	$standings = array();
+	foreach ($contest_data['people'] as $person) {
+		$cur = array(0, 0, $person);
+		for ($i = 0; $i < $n_problems; $i++) {
+			if (isset($score[$person[0]][$i])) {
+				$cur_row = $score[$person[0]][$i];
+				$cur[0] += $cur_row[0];
+				$cur[1] += $cur_row[1];
 			}
 		}
 		$standings[] = $cur;

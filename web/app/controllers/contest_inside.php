@@ -19,6 +19,22 @@
 			}
 		}
 	}
+
+	// 新增：如果比赛为时间窗口模式且处于比赛中，检查用户选择的时间窗口是否在允许的时间段内
+	if ($contest['run_mode'] == 1 && $contest['cur_progress'] == CONTEST_IN_PROGRESS && !hasContestPermission(Auth::user(), $contest)) {
+		$ureg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '{$myUser['username']}'");
+		if (!$ureg || empty($ureg['time_window'])) {
+			becomeMsgPage("<h1>进入受限</h1><p>您尚未选择有效的时间窗口，无法进入比赛。</p>");
+		}
+		$selectedTime = new DateTime($ureg['time_window']);
+		$duration = intval($contest['time_window_mode_last_min']);
+		$endTime = clone $selectedTime;
+		$endTime->modify("+{$duration} minutes");
+		$now = new DateTime(UOJTime::$time_now_str);
+		if ($now < $selectedTime || $now > $endTime) {
+			becomeMsgPage("<h1>进入受限</h1><p>您只能在 {$selectedTime->format('Y-m-d H:i:s')} 至 {$endTime->format('Y-m-d H:i:s')} 内进入比赛。在这之后，比赛未完全结束前，您无法访问比赛页面。</p>");
+		}
+	}
 	
 	if (isset($_GET['tab'])) {
 		$cur_tab = $_GET['tab'];
@@ -397,7 +413,11 @@ EOD;
 		global $contest;
 		
 		$contest_data = queryContestData($contest);
-		calcStandings($contest, $contest_data, $score, $standings);
+		if ($contest['cur_progress'] == CONTEST_IN_PROGRESS && $contest['run_mode'] == 1 && !isSuperUser(Auth::user())) {
+			calcStandingsForTimeWindowUser($contest, $contest_data, $score, $standings, Auth::user());
+		} else {
+			calcStandings($contest, $contest_data, $score, $standings);
+		}
 		
 		if ($contest['cur_progress'] >= CONTEST_FINISHED && hasContestPermission(Auth::user(), $contest)) {
 			echo <<<EOD
@@ -416,20 +436,33 @@ EOD;
 	}
 	
 	function echoContestCountdown() {
-		global $contest;
-		$rest_second = $contest['end_time']->getTimestamp() - UOJTime::$time_now->getTimestamp();
+		global $contest, $myUser;
+		if ($contest['run_mode'] == 1 && $myUser != null) {
+			$ureg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '{$myUser['username']}'");
+			if ($ureg && !empty($ureg['time_window'])) {
+				$selectedTime = new DateTime($ureg['time_window']);
+				$duration = intval($contest['time_window_mode_last_min']);
+				$endTime = clone $selectedTime;
+				$endTime->modify("+{$duration} minutes");
+			} else {
+				$endTime = $contest['end_time'];
+			}
+		} else {
+			$endTime = $contest['end_time'];
+		}
+		$rest_second = $endTime->getTimestamp() - UOJTime::$time_now->getTimestamp();
 		$time_str = UOJTime::$time_now_str;
 		$contest_ends_in = UOJLocale::get('contests::contest ends in');
 		echo <<<EOD
- 		<div class="card border-info">
- 			<div class="card-header bg-info">
- 				<h3 class="card-title">$contest_ends_in</h3>
- 			</div>
- 			<div class="card-body text-center countdown" data-rest="$rest_second"></div>
- 		</div>
-		<script type="text/javascript">
-			checkContestNotice({$contest['id']}, '$time_str');
-		</script>
+			<div class="card border-info">
+				<div class="card-header bg-info">
+					<h3 class="card-title">$contest_ends_in</h3>
+				</div>
+				<div class="card-body text-center countdown" data-rest="$rest_second"></div>
+			</div>
+			<script type="text/javascript">
+				checkContestNotice({$contest['id']}, '$time_str');
+			</script>
 EOD;
 	}
 	

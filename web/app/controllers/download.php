@@ -13,7 +13,26 @@
 					$contest = queryContest($contest_id);
 					genMoreContestInfo($contest);
 					if ($contest['cur_progress'] != CONTEST_NOT_STARTED && hasRegistered($myUser, $contest) && queryContestProblemRank($contest, $problem)) {
-						$visible = true;
+						if ($contest['run_mode'] == 1 && $contest['cur_progress'] == CONTEST_IN_PROGRESS) {
+							$visible = true;
+							if (!$myUser) {
+								$visible = false;
+							}
+							$reg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '{$myUser['username']}'");
+							if (!$reg || empty($reg['time_window'])) {
+								$visible = false;
+							}
+							$selectedTime = new DateTime($reg['time_window']);
+							$duration = intval($contest['time_window_mode_last_min']);
+							$endTime = clone $selectedTime;
+							$endTime->modify("+{$duration} minutes");
+							$now = new DateTime(UOJTime::$time_now_str);
+							if ($now < $selectedTime || $now > $endTime) {
+								$visible = false;
+							}
+						} else {
+							$visible = true;
+						}
 					}
 				}
 			}
@@ -42,7 +61,26 @@
 					$contest = queryContest($contest_id);
 					genMoreContestInfo($contest);
 					if ($contest['cur_progress'] != CONTEST_NOT_STARTED && hasRegistered($myUser, $contest) && queryContestProblemRank($contest, $problem)) {
-						$visible = true;
+						if ($contest['run_mode'] == 1 && $contest['cur_progress'] == CONTEST_IN_PROGRESS) {
+							$visible = true;
+							if (!$myUser) {
+								$visible = false;
+							}
+							$reg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '{$myUser['username']}'");
+							if (!$reg || empty($reg['time_window'])) {
+								$visible = false;
+							}
+							$selectedTime = new DateTime($reg['time_window']);
+							$duration = intval($contest['time_window_mode_last_min']);
+							$endTime = clone $selectedTime;
+							$endTime->modify("+{$duration} minutes");
+							$now = new DateTime(UOJTime::$time_now_str);
+							if ($now < $selectedTime || $now > $endTime) {
+								$visible = false;
+							}
+						} else {
+							$visible = true;
+						}
 					}
 				}
 			}

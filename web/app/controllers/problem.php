@@ -24,6 +24,26 @@
 	
 	$is_in_contest = false;
 	$ban_in_contest = false;
+		
+	// 新增：如果比赛为时间窗口模式，则只有在用户所选时间窗口有效范围内才能访问题目
+	if ($contest != null && $contest['run_mode'] == 1 && $contest['cur_progress'] == CONTEST_IN_PROGRESS) {
+		if (!hasContestPermission($myUser, $contest)) {
+			$reg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '{$myUser['username']}'");
+			if ($reg && !empty($reg['time_window'])) {
+				$selectedTime = new DateTime($reg['time_window']);
+				$duration = intval($contest['time_window_mode_last_min']);
+				$endTime = clone $selectedTime;
+				$endTime->modify("+{$duration} minutes");
+				$now = new DateTime(UOJTime::$time_now_str);
+				if ($now < $selectedTime || $now > $endTime) {
+					becomeMsgPage("<h1>访问受限</h1><p>您只能在 {$selectedTime->format('Y-m-d H:i:s')} 至 {$endTime->format('Y-m-d H:i:s')} 内访问题目。请在比赛期间或比赛完全结束后再访问题目。</p>");
+				}
+			} else {
+				becomeMsgPage("<h1>访问受限</h1><p>您没有选择有效的时间窗口。</p>");
+			}
+		}
+	}
+
 	if ($contest != null) {
 		if (!hasContestPermission($myUser, $contest)) {
 			if ($contest['cur_progress'] == CONTEST_NOT_STARTED) {

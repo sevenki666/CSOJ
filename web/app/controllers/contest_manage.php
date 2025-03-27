@@ -37,6 +37,20 @@
 		},
 		null
 	);
+	$time_form->addInput(
+		'run_mode', 'text', '报名模式（0 为普通模式，1 为时间窗口模式）', $contest['run_mode'],
+		function($str) {
+			if (!is_string($str)) {
+				return false;
+			}
+			if ($str == '0' || $str == '1') {
+				return '';
+			}else {
+				return '必须为 0 或 1';
+			}
+		},
+		null
+	);
 	$time_form->handle = function(&$vdata) {
 		global $contest;
 		$start_time_str = $vdata['start_time']->format('Y-m-d H:i:s');
@@ -47,9 +61,54 @@
 		$esc_name = $purifier->purify($esc_name);
 		$esc_name = DB::escape($esc_name);
 		
-		DB::update("update contests set start_time = '$start_time_str', last_min = {$_POST['last_min']}, name = '$esc_name' where id = {$contest['id']}");
+		DB::update("update contests set start_time = '$start_time_str', last_min = {$_POST['last_min']}, run_mode = {$_POST['run_mode']}, name = '$esc_name' where id = {$contest['id']}");
 	};
 	
+	$time_window_manage_form = new UOJForm("time_window_manage");
+	$time_window_manage_form->addInput(
+		'window_start_time', 'text', '开始时间', '',
+		function($str) {
+			try {
+				new DateTime($str);
+			} catch (Exception $e) {
+				return '无效时间格式';
+			}
+			return '';
+		},
+		null
+	);
+	$tw_options = array(
+		'add' => '增加时间窗口',
+		'del' => '删除时间窗口'
+	);
+	$time_window_manage_form->addSelect('op-type', $tw_options, '操作类型', '');
+	$time_window_manage_form->handle = function() {
+		$arg = new DateTime($_POST['window_start_time']);
+		$mod = $_POST['op-type'];
+		$time_str = $arg->format('Y-m-d H:i:s');
+		switch ($mod) {
+			case 'add':
+				DB::update("insert into contest_time_window (contest_id, start_time) values ('${contest['id']}', '${time_str}')");
+				break;
+			case 'del':
+				DB::update("delete from contest_time_window where contest_id = '${contest['id']}' and start_time = '${time_str}'");
+				break;
+		}
+	};
+
+	// 新增：时间窗口运行时间修改表单
+	$time_window_duration_form = new UOJForm('time_window_duration');
+	$time_window_duration_form->addInput(
+		'time_window_mode_last_min', 'text', '时间窗口运行时长（分钟）', $contest['time_window_mode_last_min'],
+		function($str) {
+			return !validateUInt($str) ? '必须为正整数' : '';
+		},
+		null
+	);
+	$time_window_duration_form->handle = function(&$vdata) use ($contest) {
+		DB::update("update contests set time_window_mode_last_min = {$_POST['time_window_mode_last_min']} where id = {$contest['id']}");
+	};
+
 	$managers_form = newAddDelCmdForm('managers',
 		function($username) {
 			if (!validateUsername($username) || !queryUser($username)) {
@@ -193,6 +252,8 @@
 	}
 	
 	$time_form->runAtServer();
+	$time_window_manage_form->runAtServer();
+	$time_window_duration_form->runAtServer();
 	$managers_form->runAtServer();
 	$problems_form->runAtServer();
 ?>
@@ -209,7 +270,18 @@
 </ul>
 <div class="tab-content top-buffer-sm">
 	<div class="tab-pane active" id="tab-time">
-		<?php $time_form->printHTML(); ?>
+		<div>
+			<h3>时间更改</h3>
+			<?php $time_form->printHTML(); ?>
+		</div>
+		<div>
+			<h3>窗口增删</h3>
+			<?php $time_window_manage_form->printHTML(); ?>
+		</div>
+		<div>
+			<h3>时间窗口运行时间</h3>
+			<?php $time_window_duration_form->printHTML(); ?>
+		</div>
 	</div>
 	
 	<div class="tab-pane" id="tab-managers">
