@@ -414,7 +414,7 @@ EOD;
 		
 		$contest_data = queryContestData($contest);
 		if ($contest['cur_progress'] == CONTEST_IN_PROGRESS && $contest['run_mode'] == 1 && !isSuperUser(Auth::user())) {
-			calcStandingsForTimeWindowUser($contest, $contest_data, $score, $standings, Auth::user());
+			calcStandingsForTimeWindowUser($contest, $contest_data, $score, $standings, Auth::id());
 		} else {
 			calcStandings($contest, $contest_data, $score, $standings);
 		}

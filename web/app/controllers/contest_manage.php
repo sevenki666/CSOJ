@@ -82,7 +82,7 @@
 		'del' => '删除时间窗口'
 	);
 	$time_window_manage_form->addSelect('op-type', $tw_options, '操作类型', '');
-	$time_window_manage_form->handle = function() {
+	$time_window_manage_form->handle = function() use ($contest) {
 		$arg = new DateTime($_POST['window_start_time']);
 		$mod = $_POST['op-type'];
 		$time_str = $arg->format('Y-m-d H:i:s');

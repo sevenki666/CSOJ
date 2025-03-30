@@ -162,6 +162,9 @@ function queryContestData($contest, $config = array()) {
 		if ($contest['cur_progress'] < CONTEST_FINISHED) {
 			$result = DB::query("select id, submit_time, submitter, problem_id, score from submissions"
 				." where contest_id = {$contest['id']} and score is not null order by id");
+		} else if($contest['run_mode'] == 1){
+			$result = DB::query("select submission_id, submit_time,"
+				." submitter, problem_id, score from contests_submissions where contest_id = {$contest['id']}");
 		} else {
 			$result = DB::query("select submission_id, date_add('{$contest['start_time_str']}', interval penalty second),"
 				." submitter, problem_id, score from contests_submissions where contest_id = {$contest['id']}");
@@ -187,10 +190,12 @@ function queryContestData($contest, $config = array()) {
 function calcStandings($contest, $contest_data, &$score, &$standings, $update_contests_submissions = false) {
 	// score: username, problem_pos => score, penalty, id
 	$score = array();
+	$fake_score = array();
 	$n_people = count($contest_data['people']);
 	$n_problems = count($contest_data['problems']);
 	foreach ($contest_data['people'] as $person) {
 		$score[$person[0]] = array();
+		$fake_score[$person[0]] = array();
 	}
 	foreach ($contest_data['data'] as $submission) {
 	    if ($contest['run_mode'] == 1) {
@@ -205,13 +210,21 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 	    } else {
 	        $penalty = (new DateTime($submission[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
 	    }
-	    
+
+		/* if($penalty < 0) {
+			error_log("Contest {$contest['id']} submission {$submission[0]} has negative penalty: {$penalty}");
+			error_log("contest start time : {$contest['start_time']->format('Y-m-d H:i:s')}");
+			error_log("submit time: {$submission[1]}");
+			error_log("base time : {$baseTime->format('Y-m-d H:i:s')}");
+		} */
+
 	    if ($contest['extra_config']['standings_version'] >= 2) {
 	        if ($submission[4] == 0) {
 	            $penalty = 0;
 	        }
 	    }
 	    $score[$submission[2]][$submission[3]] = array($submission[4], $penalty, $submission[0]);
+		$fake_score[$submission[2]][$submission[3]] = array($submission[4], $penalty, $submission[0], $submission[1]);
 	}
 
 	// standings: rank => score, penalty, [username, user_rating], virtual_rank
@@ -221,10 +234,12 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 		for ($i = 0; $i < $n_problems; $i++) {
 			if (isset($score[$person[0]][$i])) {
 				$cur_row = $score[$person[0]][$i];
+				$fake_cur_row = $fake_score[$person[0]][$i];
 				$cur[0] += $cur_row[0];
 				$cur[1] += $cur_row[1];
 				if ($update_contests_submissions) {
-					DB::insert("insert into contests_submissions (contest_id, submitter, problem_id, submission_id, score, penalty) values ({$contest['id']}, '{$person[0]}', {$contest_data['problems'][$i]}, {$cur_row[2]}, {$cur_row[0]}, {$cur_row[1]})");
+					$fake_submit_time_str = (new DateTime($fake_cur_row[3]))->format('Y-m-d H:i:s');
+					DB::insert("insert into contests_submissions (contest_id, submitter, problem_id, submission_id, score, penalty, submit_time) values ({$contest['id']}, '{$person[0]}', {$contest_data['problems'][$i]}, {$cur_row[2]}, {$cur_row[0]}, {$cur_row[1]}, '{$fake_submit_time_str}')");
 				}
 			}
 		}
