@@ -252,9 +252,25 @@ EOD
 <a role="button" class="btn btn-info float-right" href="/contest/<?= $contest['id'] ?>/problem/<?= $problem['id'] ?>/statistics"><span class="glyphicon glyphicon-stats"></span> <?= UOJLocale::get('problems::statistics') ?></a>
 <a role="button" class="btn btn-info float-right" style="margin-right: 4px;" href="/download.php?type=problem&id=<?= $problem['id'] ?>"><span class="glyphicon glyphicon-download-alt"></span> <?= UOJLocale::get('problems::attachment') ?></a>
 <?php if ($contest['cur_progress'] <= CONTEST_IN_PROGRESS): ?>
+<?php 
+    // 如果为时间窗口模式且用户已报名，计算截止时间为用户所选窗口结束时间
+    if ($contest['run_mode'] == 1 && $myUser != null) {
+        $ureg = DB::selectFirst("select time_window from contests_registrants where contest_id = {$contest['id']} and username = '{$myUser['username']}'");
+        if ($ureg && !empty($ureg['time_window'])) {
+            $selectedTime = new DateTime($ureg['time_window']);
+            $duration = intval($contest['time_window_mode_last_min']);
+            $countdown_end = clone $selectedTime;
+            $countdown_end->modify("+{$duration} minutes");
+        } else {
+            $countdown_end = $contest['end_time'];
+        }
+    } else {
+        $countdown_end = $contest['end_time'];
+    }
+?>
 <script type="text/javascript">
 checkContestNotice(<?= $contest['id'] ?>, '<?= UOJTime::$time_now_str ?>');
-$('#contest-countdown').countdown(<?= $contest['end_time']->getTimestamp() - UOJTime::$time_now->getTimestamp() ?>);
+$('#contest-countdown').countdown(<?= $countdown_end->getTimestamp() - UOJTime::$time_now->getTimestamp() ?>);
 </script>
 <?php endif ?>
 <?php else: ?>
